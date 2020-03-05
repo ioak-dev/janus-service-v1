@@ -12,6 +12,6 @@
 * python manage.py runserver
 
 ## Procfile Honcho for celery
-web: gunicorn appnamehere.wsgi --log-file
-worker1: celery -A appnamehere beat -l info
-worker2: celery -A appnamehere worker -l info
+web: gunicorn janus.wsgi --log-file
+worker1: celery -A janus beat -l info
+worker2: celery -A janus worker -l info

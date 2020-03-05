@@ -13,11 +13,11 @@ def do_create(data_in, banner):
     data = data_in.copy()
     if banner != None:
         data['banner'] = banner.read()
-    space = get_collection('appnamehere','space').insert_one(data)
+    space = get_collection('janus','space').insert_one(data)
     return (200, {'_id': str(space.inserted_id)})
 
 def do_get_banner(space):
-    spaceData = get_collection('appnamehere','space').find_one({'name': space})
+    spaceData = get_collection('janus','space').find_one({'name': space})
     spaceData['_id'] = str(spaceData['_id'])
     if 'banner' in spaceData:
         return (200, base64.b64encode(spaceData['banner']))
@@ -25,14 +25,14 @@ def do_get_banner(space):
         return (404, None)
 
 def do_get_space(space):
-    spaceData = get_collection('appnamehere','space').find_one({'name': space})
+    spaceData = get_collection('janus','space').find_one({'name': space})
     spaceData['_id'] = str(spaceData['_id'])
     spaceData.pop('banner', None)
     return (200, spaceData)
 
 def do_update_space(space,data):
-    spaceData = get_collection('appnamehere','space').find_one({'name': space})
-    get_collection('appnamehere','space').update_one({
+    spaceData = get_collection('janus','space').find_one({'name': space})
+    get_collection('janus','space').update_one({
         '_id' : (spaceData['_id'])
     },{
         '$set':{

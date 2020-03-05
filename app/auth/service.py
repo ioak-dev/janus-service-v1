@@ -50,7 +50,7 @@ def do_signin(space, data):
         })
 
 def do_jwttest(space):
-    space=get_collection('appnamehere', 'space').find_one({'name': space})
+    space=get_collection('janus', 'space').find_one({'name': space})
     #space = db_utils.find(space, domain,{'name': space})
     jwtPassword = space.get('jwtPassword')
     return (200, jwt.encode({
@@ -61,7 +61,7 @@ def do_jwttest(space):
         }, jwtPassword, algorithm='HS256').decode('utf-8'))
 
 def do_signin_via_jwt(space, data):
-    spaceData=get_collection('appnamehere', 'space').find_one({'name': space})
+    spaceData=get_collection('janus', 'space').find_one({'name': space})
     #spaceData = db_utils.find(space, domain, {'name': space})
     jwtPassword = spaceData.get('jwtPassword')
     jwtToken = data.get('jwtToken')
