@@ -4,7 +4,7 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns =[
-    path('', views.get_update_category),
-    path('<str:id>', views.delete_category),
+    path('', views.get_update_stage),
+    path('<str:id>', views.delete_stage),
     path('id/<str:id>', views.get_by_id)
 ]

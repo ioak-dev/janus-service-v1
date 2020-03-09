@@ -29,7 +29,7 @@ urlpatterns = [
     path('user/<str:space>/', include('app.user.urls')),
     path('project/<str:space>/', include('app.project.urls')),
     path('team/<str:space>/', include('app.team.urls')),
-    path('category/<str:space>/', include('app.category.urls')),
+    path('stage/<str:space>/', include('app.stage.urls')),
     path('task/<str:space>/', include('app.task.urls')),
     path('comment/<str:space>/', include('app.comment.urls'))
 ]

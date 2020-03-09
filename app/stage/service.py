@@ -2,7 +2,7 @@ import os, datetime, time
 from library.db_connection_factory import get_collection
 import library.db_utils as db_utils
 
-domain = 'Category'
+domain = 'Stage'
 
 def find(request, space):
     data = db_utils.find(space, domain, {})
