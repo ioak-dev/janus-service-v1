@@ -19,3 +19,10 @@ def delete(request, space, id):
 def find_by_id(request, space, id):
     data = db_utils.find(space, domain, {'_id': id})
     return (200, {'data': data})
+
+
+def move_task_by_id(request, space, id, stageId):
+    data = db_utils.find(space, domain, {'_id': id})
+    data['stageId'] = stageId
+    updated_data = update(request, space, data)
+    return (200, {'data': updated_data})

@@ -23,3 +23,9 @@ def get_by_id(request, space, id):
     if request.method == 'GET':
         response = service.find_by_id(request, space, id)
         return JsonResponse(response[1], status=response[0])
+
+@api_view(['PUT'])
+def move_task(request, space, id, stageId):
+    if request.method == 'PUT':
+        response = service.move_task_by_id(request, space, id, stageId)
+        return JsonResponse(response[1], status=response[0])
