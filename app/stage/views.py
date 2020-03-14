@@ -11,15 +11,12 @@ def get_update_stage(request, space):
     if request.method == 'PUT':
         response = service.update(request, space, request.body)
         return JsonResponse(response[1], status=response[0])
-    
-@api_view(['DELETE'])
-def delete_stage(request,space,id):
-    if request.method == 'DELETE':
-        response = service.delete(request, space, id)
-        return JsonResponse(response[1], status=response[0])
 
-@api_view(['GET'])
-def get_by_id(request, space, id):
+@api_view(['GET', 'DELETE'])
+def by_id(request, space, project_id, id):
     if request.method == 'GET':
-        response = service.find_by_id(request, space, id)
+        response = service.find_by_id(request, space, project_id, id)
+        return JsonResponse(response[1], status=response[0])
+    if request.method == 'DELETE':
+        response = service.delete(request, space, project_id, id)
         return JsonResponse(response[1], status=response[0])

@@ -4,7 +4,7 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns =[
-    path('', views.get_update_task),
-    path('<str:id>', views.delete_task),
-    path('id/<str:id>', views.get_by_id)
+    path('<str:project_id>', views.get_update_task),
+    path('<str:project_id>/move', views.move_task),
+    path('<str:project_id>/<str:id>', views.by_id)
 ]
