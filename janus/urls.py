@@ -26,5 +26,10 @@ urlpatterns = [
     path('auth/<str:space>/', include('app.auth.urls')),
     path('space/', include('app.space.urls')),
     path('faq/<str:space>/', include('app.faq.urls')),
-    path('user/<str:space>/', include('app.user.urls'))
+    path('user/<str:space>/', include('app.user.urls')),
+    path('project/<str:space>/', include('app.project.urls')),
+    path('team/<str:space>/', include('app.team.urls')),
+    path('stage/<str:space>/', include('app.stage.urls')),
+    path('task/<str:space>/', include('app.task.urls')),
+    path('comment/<str:space>/', include('app.comment.urls'))
 ]

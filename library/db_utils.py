@@ -16,15 +16,18 @@ def upsert(space, collection_name, data, user_id = None):
     now = datetime.now()
     data['lastModifiedBy'] = user_id
     data['lastModifiedAt'] = now
-    if data.get('id') is None:
+    if data.get('id') is None and data.get('_id') is None:
         data['createdBy'] = user_id
         data['createdAt'] = now
         response = get_collection(space, collection_name).insert_one(data)
         record = get_collection(space, collection_name).find_one({'_id': response.inserted_id})
         return clean_object(record)
     else:
-        data['_id'] = ObjectId(data.get('id'))
-        del data['id']
+        if data.get('id') is None:
+            data['_id'] = ObjectId(data.get('_id'))
+        else:
+            data['_id'] = ObjectId(data.get('id'))
+            del data['id']
         updated_record = get_collection(space, collection_name).find_one_and_update(
             { '_id' : data.get('_id') },
             { '$set': data },
