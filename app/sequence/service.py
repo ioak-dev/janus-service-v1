@@ -20,5 +20,9 @@ def find_by_id(request, space, id):
     data = db_utils.find(space, domain, {'_id': id})
     return (200, {'data': data})
 
-def nextSequence(request, space, field, context):
+def next_sequence(request, space, field, context):
     data = db_utils.find(space, domain, {'field': field}, {'context':context})
+    response = data['factor'] + data['factor']
+    data['factor'] = response
+    db_utils.upsert(space, domain, data, request.user_id)
+    return (200, {'data':response})

@@ -1,6 +1,6 @@
 from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
-import app.checklistitem.service as service
+import app.sequence.service as service
 
 @api_view(['GET', 'PUT'])
 def get_update_sequence(request, space):
@@ -21,4 +21,10 @@ def delete_sequence(request,space,id):
 def get_by_id(request, space, id):
     if request.method == 'GET':
         response = service.find_by_id(request, space, id)
+        return JsonResponse(response[1], status=response[0])
+
+@api_view(['GET'])
+def get_sequence(request, space, field, context):
+    if request.method == 'GET':
+        response = service.next_sequence(request, space, field, context)
         return JsonResponse(response[1], status=response[0])
