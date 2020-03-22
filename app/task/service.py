@@ -6,12 +6,14 @@ from app.sequence.service import nextval, reset_sequence
 domain = 'Task'
 
 def find(request, space, project_id):
-    data = db_utils.find(space, domain, {'projectId': project_id}, [('order', pymongo.ASCENDING)])
+    data = db_utils.find(space, domain, {'projectId': project_id}, [('order', pymongo.DESCENDING)])
     return (200, {'data': data})
 
 def update(request, space, project_id, data):
+    project = db_utils.find(space, 'Project', {'_id': project_id})[0]
     data['projectId'] = project_id
-    if 'order' not in data:
+    if '_id' not in data:
+        data['taskId'] = project['name'][:4].upper() + '-' + str(nextval(space, 'taskId', project_id))
         data['order'] = nextval(space, 'taskOrder', project_id)
     updated_record = db_utils.upsert(space, domain, data, request.user_id)
     return (200, {'data': updated_record})
@@ -28,19 +30,22 @@ def move_task(request, space, project_id, data):
     moveTask = db_utils.find(space, domain, {'_id': data['moveTaskId']})[0]
     afterTask = db_utils.find(space, domain, {'_id': data['afterTaskId']})[0]
     inc = afterTask['order'] + 1
-    if inc % 10 != 1:
-        moveTask['order'] = afterTask['order'] + 1
+    if moveTask['order'] != inc:
+        print(moveTask['order'], afterTask['order'], inc)
+        recompute_order(space, project_id, afterTask['order'])
+        moveTask['order'] = inc
     else:
-        moveTask['order'] = afterTask['order'] + 1
-        recompute_order(space, project_id)
+        sub = afterTask['order']
+        afterTask['order'] = moveTask['order']
+        moveTask['order'] = sub
+        updated_record = db_utils.upsert(space, domain, afterTask, request.user_id)
 
     moveTask['stageId'] = afterTask['stageId']
     updated_record = db_utils.upsert(space, domain, moveTask, request.user_id)
     return (200, {'data': updated_record})
 
-def recompute_order(space, project_id):
-    reset_sequence(space, 'taskOrder', project_id)
-    tasks = db_utils.find(space, domain, {'projectId': project_id}, [('order', pymongo.ASCENDING)])
+def recompute_order(space, project_id, order):
+    tasks = db_utils.find(space, domain, {'$and': [{'projectId': project_id}, {'order': {'$gt': order}}]}, [('order', pymongo.ASCENDING)])
     for task in tasks:
         task['order'] = nextval(space, 'taskOrder', project_id)
         db_utils.upsert(space, domain, task)

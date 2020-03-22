@@ -9,4 +9,5 @@ def run():
         for project in projects:
             sequence_service.is_present(space['name'], 'taskOrder', project['_id'])
             if sequence_service.is_present(space['name'], 'taskOrder', project['_id']) == False:
-                sequence_service.create_sequence(space['name'], 'taskOrder', project['_id'], 10)
+                sequence_service.create_sequence(space['name'], 'taskOrder', project['_id'], 1)
+                sequence_service.create_sequence(space['name'], 'taskId', project['_id'], 1)

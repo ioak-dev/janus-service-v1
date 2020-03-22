@@ -1,6 +1,7 @@
 import os, datetime, time
 from library.db_connection_factory import get_collection
 import library.db_utils as db_utils
+import app.sequence.service as sequence_service
 
 domain = 'Project'
 
@@ -8,7 +9,13 @@ def find(request, space):
     return (200, {'data': find_all_projects(space)})
 
 def update(request, space, data):
+    new_record = False
+    if '_id' not in data:
+        new_record = True
     updated_record = db_utils.upsert(space, domain, data, request.user_id)
+    if new_record:
+        sequence_service.create_sequence(space, 'taskOrder', updated_record['_id'], 1)
+        sequence_service.create_sequence(space['name'], 'taskId', project['_id'], 1)
     return (200, {'data': updated_record})
 
 def delete(request, space, id):
