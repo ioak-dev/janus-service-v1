@@ -2,27 +2,30 @@ import os, datetime, time
 from library.db_connection_factory import get_collection
 import library.db_utils as db_utils
 
-domain = 'Sequence'
+domain = 'sequence'
 
-def find(request, space):
-    data = db_utils.find(space, domain, {})
-    return (200, {'data': data})
+def is_present(space, field, context):
+    if len(db_utils.find(space, domain, {'field': field, 'context':context})) == 1:
+        return True
+    return False
 
-def update(request, space, data):
-    updated_record = db_utils.upsert(space, domain, data, request.user_id)
-    return (200, {'data': updated_record})
+def create_sequence(space, field, context, factor):
+    db_utils.upsert(space, domain, {
+        'field': field,
+        'context': context,
+        'nextVal': 1,
+        'factor': factor
+    })
 
-def delete(request, space, id):
-    result = db_utils.delete(space, domain, {'_id': id}, request.user_id)
-    return (200, {'deleted_count': result.deleted_count})
+def reset_sequence(space, field, context):
+    sequence = db_utils.find(space, domain, {'field': field, 'context': context})[0]
+    sequence['nextVal'] = 1
+    return db_utils.upsert(space, domain, sequence)
 
-def find_by_id(request, space, id):
-    data = db_utils.find(space, domain, {'_id': id})
-    return (200, {'data': data})
-
-def next_sequence(request, space, field, context):
-    data = db_utils.find(space, domain, {'field': field}, {'context':context})
-    response = data['factor'] + data['factor']
-    data['factor'] = response
-    db_utils.upsert(space, domain, data, request.user_id)
-    return (200, {'data':response})
+def nextval(space, field, context):
+    print(space, field, context)
+    data = db_utils.find(space, domain, {'field': field, 'context': context})[0]
+    currVal = data['nextVal']
+    data['nextVal'] = data['nextVal'] + data['factor']
+    db_utils.upsert(space, domain, data)
+    return currVal

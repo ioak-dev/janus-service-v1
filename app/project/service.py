@@ -5,8 +5,7 @@ import library.db_utils as db_utils
 domain = 'Project'
 
 def find(request, space):
-    data = db_utils.find(space, domain, {})
-    return (200, {'data': data})
+    return (200, {'data': find_all_projects(space)})
 
 def update(request, space, data):
     updated_record = db_utils.upsert(space, domain, data, request.user_id)
@@ -19,3 +18,6 @@ def delete(request, space, id):
 def find_by_id(request, space, id):
     data = db_utils.find(space, domain, {'_id': id})
     return (200, {'data': data})
+
+def find_all_projects(space):
+    return db_utils.find(space, domain, {})
