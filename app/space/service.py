@@ -1,6 +1,7 @@
 import os, datetime, time
 from pymongo import MongoClient
 from library.db_connection_factory import get_collection
+import library.db_utils as db_utils
 from gridfs import GridFS
 import base64
 from bson.binary import Binary
@@ -40,3 +41,6 @@ def do_update_space(space,data):
         }
     },upsert=True )
     return (200, None)
+
+def get_all_spaces():
+    return db_utils.find('janus', 'space', {})
