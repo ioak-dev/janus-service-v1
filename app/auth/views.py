@@ -5,31 +5,31 @@ from django.core import serializers
 import json
 
 @api_view(['GET'])
-def keys(request, space):
+def keys(request, spaceId):
     response = generate_keys()
     return JsonResponse(response[1], status=response[0])
 
 @api_view(['POST'])
-def signup(request, space):
-    response = do_signup(space, request.body)
+def signup(request, spaceId):
+    response = do_signup(spaceId, request.body)
     return JsonResponse(response[1], status=response[0])
 
 @api_view(['GET'])
-def getKeys(request, space, email):
-    response = get_keys(space, email)
+def getKeys(request, spaceId, email):
+    response = get_keys(spaceId, email)
     return HttpResponse(response[1].get('problem'), status=response[0])
 
 @api_view(['POST'])
-def signin(request, space):
-    response = do_signin(space, request.body)
+def signin(request, spaceId):
+    response = do_signin(spaceId, request.body)
     return JsonResponse(response[1], status=response[0])
 
 @api_view(['GET'])
-def jwtTest(request, space):
-    response = do_jwttest(space)
+def jwtTest(request, spaceId):
+    response = do_jwttest(spaceId)
     return HttpResponse(response[1], status=response[0])
 
 @api_view(['POST'])
-def signin_jwt(request, space):
-    response = do_signin_via_jwt(space, request.body)
+def signin_jwt(request, spaceId):
+    response = do_signin_via_jwt(spaceId, request.body)
     return JsonResponse(response[1], status=response[0])

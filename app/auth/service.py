@@ -14,23 +14,23 @@ def generate_keys():
         'solution': secrets.token_hex(40)
     })
 
-def get_keys(space, email):
-    user = get_collection(space, 'user').find_one({'email': email})
+def get_keys(spaceId, email):
+    user = get_collection(spaceId, 'user').find_one({'email': email})
     #user = db_utils.find(space,domain,{'email': email})
     if user is None:
         return (404, {})
     else:
         return (200, {'problem': user.get('problem')})
 
-def do_signup(space, data):
+def do_signup(spaceId, data):
     print(data)
     #user = get_collection(space, 'user').insert_one(data)
-    user = db_utils.upsert(space, domain, data)
+    user = db_utils.upsert(spaceId, domain, data)
     #return (200, {'_id': str(user.inserted_id)})
     return (200, {'_id': user})
 
-def do_signin(space, data):
-    user = get_collection(space, 'user').find_one({'email': data.get('email')})
+def do_signin(spaceId, data):
+    user = get_collection(spaceId, 'user').find_one({'email': data.get('email')})
     #user = db_utils.find(space, domain, {'email': data.get('email')})
     #response = {'content': {}}
     if user is None:
@@ -45,14 +45,14 @@ def do_signin(space, data):
                 'userId': str(user.get('_id')),
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=8)
                 }, 'jwtsecret').decode('utf-8'),
-            'space': space,
+            'spaceId': spaceId,
             'secret': 'none'
         })
 
-def do_jwttest(space):
-    space=get_collection('janus', 'space').find_one({'name': space})
+def do_jwttest(spaceId):
+    spaceId=get_collection('janus', 'spaceId').find_one({'name': spaceId})
     #space = db_utils.find(space, domain,{'name': space})
-    jwtPassword = space.get('jwtPassword')
+    jwtPassword = spaceId.get('jwtPassword')
     return (200, jwt.encode({
             'userId': '4587439657496t',
             'name': 'test user display name',
@@ -60,33 +60,33 @@ def do_jwttest(space):
             'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=8)
         }, jwtPassword, algorithm='HS256').decode('utf-8'))
 
-def do_signin_via_jwt(space, data):
-    spaceData=get_collection('janus', 'space').find_one({'name': space})
+def do_signin_via_jwt(spaceId, data):
+    spaceData=get_collection('janus', 'spaceId').find_one({'name': spaceId})
     #spaceData = db_utils.find(space, domain, {'name': space})
     jwtPassword = spaceData.get('jwtPassword')
     jwtToken = data.get('jwtToken')
     tokenData = jwt.decode(jwtToken, jwtPassword, algorithm='HS256')
-    user = get_collection(space, 'user').find_one({'email': tokenData.get('email')})
+    user = get_collection(spaceId, 'user').find_one({'email': tokenData.get('email')})
     #user = db_utils.find(space, domain,{'email': tokenData.get('email')})
     if user is None:
-        """ get_collection(space, 'user').insert_one({
+        """ get_collection(spaceId, 'user').insert_one({
             'name': tokenData.get('name'),
             'email': tokenData.get('email'),
             'type': 'JWT_USER'
         }) """
-        db_utils.upsert(space, domain,{
+        db_utils.upsert(spaceId, domain, {
             'name': tokenData.get('name'),
             'email': tokenData.get('email'),
             'type': 'JWT_USER'
         })
     else:
-        """ get_collection(space, 'user').update({'_id': user.get('_id')},
+        """ get_collection(spaceId, 'user').update({'_id': user.get('_id')},
         {
             'name': tokenData.get('name'),
             'email': tokenData.get('email'),
             'type': 'JWT_USER'
         }, upsert=True) """
-        db_utils.upsert(space, domain, {
+        db_utils.upsert(spaceId, domain, {
             {'_id': user.get('_id')},
             {
                 'name': tokenData.get('name'),
@@ -95,7 +95,7 @@ def do_signin_via_jwt(space, data):
             }
         })
     
-    user = get_collection(space, 'user').find_one({'email': tokenData.get('email')})
+    user = get_collection(spaceId, 'user').find_one({'email': tokenData.get('email')})
     #user = db_utils.find(space, user, {'email': tokenData.get('email')})
     return (200, {
         'name': user.get('name'),
@@ -104,7 +104,7 @@ def do_signin_via_jwt(space, data):
                 'name': str(user.get('_id')),
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=8)
             }, jwtPassword, algorithm='HS256').decode('utf-8'),
-        'space': space,
+        'spaceId': spaceId,
         'secret': 'none'
     })
 

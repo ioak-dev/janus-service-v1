@@ -31,5 +31,7 @@ urlpatterns = [
     path('team/<str:space>/', include('app.team.urls')),
     path('stage/<str:space>/', include('app.stage.urls')),
     path('task/<str:space>/', include('app.task.urls')),
-    path('comment/<str:space>/', include('app.comment.urls'))
+    path('comment/task/<str:space>/', include('app.comment.urls')),
+    path('log/<str:space>/', include('app.log.urls')),
+    path('checklistitem/task/<str:space>/', include('app.checklistitem.urls'))
 ]
