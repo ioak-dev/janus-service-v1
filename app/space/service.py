@@ -14,26 +14,26 @@ def do_create(data_in, banner):
     data = data_in.copy()
     if banner != None:
         data['banner'] = banner.read()
-    space = get_collection('janus','space').insert_one(data)
-    return (200, {'_id': str(space.inserted_id)})
+    spaceId = get_collection('janus','spaceId').insert_one(data)
+    return (200, {'_id': str(spaceId.inserted_id)})
 
-def do_get_banner(space):
-    spaceData = get_collection('janus','space').find_one({'name': space})
+def do_get_banner(spaceId):
+    spaceData = get_collection('janus','spaceId').find_one({'name': spaceId})
     spaceData['_id'] = str(spaceData['_id'])
     if 'banner' in spaceData:
         return (200, base64.b64encode(spaceData['banner']))
     else:
         return (404, None)
 
-def do_get_space(space):
-    spaceData = get_collection('janus','space').find_one({'name': space})
+def do_get_space(spaceId):
+    spaceData = get_collection('janus','spaceId').find_one({'name': spaceId})
     spaceData['_id'] = str(spaceData['_id'])
     spaceData.pop('banner', None)
     return (200, spaceData)
 
-def do_update_space(space,data):
-    spaceData = get_collection('janus','space').find_one({'name': space})
-    get_collection('janus','space').update_one({
+def do_update_space(spaceId, data):
+    spaceData = get_collection('janus','spaceId').find_one({'name': spaceId})
+    get_collection('janus','spaceId').update_one({
         '_id' : (spaceData['_id'])
     },{
         '$set':{
@@ -43,4 +43,4 @@ def do_update_space(space,data):
     return (200, None)
 
 def get_all_spaces():
-    return db_utils.find('janus', 'space', {})
+    return db_utils.find('janus', 'spaceId', {})

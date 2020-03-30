@@ -5,32 +5,32 @@ import library.db_utils as db_utils
 domain = 'user'
 domain_role_permissions = 'role_permissions'
 
-def find(request, space):
-    data = remove_sensitive_data(db_utils.find(space, domain, {'_id': request.user_id}))
+def find(request, spaceId):
+    data = remove_sensitive_data(db_utils.find(spaceId, domain, {'_id': request.user_id}))
     return (200, {'data': data})
 
-def find_all(request, space):
-    data = remove_sensitive_data(db_utils.find(space, domain, {}))
+def find_all(request, spaceId):
+    data = remove_sensitive_data(db_utils.find(spaceId, domain, {}))
     return (200, {'data': data})
 
-def expand_authors(space, data):
+def expand_authors(spaceId, data):
     for item in data:
-        last_modified_by = db_utils.find(space, domain, {'_id': item.get('lastModifiedBy')})
-        created_by = db_utils.find(space, domain, {'_id': item.get('createdBy')})
+        last_modified_by = db_utils.find(spaceId, domain, {'_id': item.get('lastModifiedBy')})
+        created_by = db_utils.find(spaceId, domain, {'_id': item.get('createdBy')})
         item['lastModifiedByEmail'] = last_modified_by[0].get('email')
         item['createdByEmail'] = created_by[0].get('email')
     return data
 
-def update_user(request, space):
+def update_user(request, spaceId):
     print(request.body)
-    updated_record = db_utils.upsert(space, domain, request.body, request.user_id)
+    updated_record = db_utils.upsert(spaceId, domain, request.body, request.user_id)
     return (200, {'data': updated_record})
 
 
-def find_permitted_actions(space, user_id):
-    roles = db_utils.find(space, domain, {'_id': user_id})[0].get('roles')
+def find_permitted_actions(spaceId, user_id):
+    roles = db_utils.find(spaceId, domain, {'_id': user_id})[0].get('roles')
     roles.append('open')
-    return db_utils.find(space, domain_role_permissions, {'role': {'$in': roles}})
+    return db_utils.find(spaceId, domain_role_permissions, {'role': {'$in': roles}})
 
 def can_i_perform(permitted_actions, action, domain, condition, group=None):
     for item in permitted_actions:

@@ -27,16 +27,16 @@ def create(request):
         return JsonResponse(response[1], status=response[0])
 
 @api_view(['GET'])
-def get_banner(request, space):
-    response = do_get_banner(space)
+def get_banner(request, spaceId):
+    response = do_get_banner(spaceId)
     return HttpResponse(response[1], status=response[0])
 
 @api_view(['GET'])
-def get_space(request, space):
-    response = do_get_space(space)
+def get_space(request, spaceId):
+    response = do_get_space(spaceId)
     return JsonResponse(response[1], status=response[0])
 
 @api_view(['PUT'])
-def add_stage(request,space):
-    response = do_update_space(space,request.body)
+def add_stage(request, spaceId):
+    response = do_update_space(spaceId, request.body)
     return JsonResponse(response[1], status=response[0])

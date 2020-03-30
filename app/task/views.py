@@ -4,25 +4,25 @@ from django.core import serializers
 import app.task.service as service
 
 @api_view(['GET', 'PUT'])
-def get_update_task(request, space, project_id):
+def get_update_task(request, spaceId, project_id):
     if request.method == 'GET':
-        response = service.find(request, space, project_id)
+        response = service.find(request, spaceId, project_id)
         return JsonResponse(response[1], status=response[0])
     if request.method == 'PUT':
-        response = service.update(request, space, project_id, request.body)
+        response = service.update(request, spaceId, project_id, request.body)
         return JsonResponse(response[1], status=response[0])
 
 @api_view(['GET', 'DELETE'])
-def by_id(request, space, project_id, id):
+def by_id(request, spaceId, project_id, id):
     if request.method == 'GET':
-        response = service.find_by_id(request, space, project_id, id)
+        response = service.find_by_id(request, spaceId, project_id, id)
         return JsonResponse(response[1], status=response[0])
     if request.method == 'DELETE':
-        response = service.delete(request, space, project_id, id)
+        response = service.delete(request, spaceId, project_id, id)
         return JsonResponse(response[1], status=response[0])
 
 @api_view(['POST'])
-def move_task(request, space, project_id):
+def move_task(request, spaceId, project_id):
     if request.method == 'POST':
-        response = service.move_task(request, space, project_id, request.body)
+        response = service.move_task(request, spaceId, project_id, request.body)
         return JsonResponse(response[1], status=response[0])

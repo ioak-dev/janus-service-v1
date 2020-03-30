@@ -5,7 +5,7 @@ from . import views
 
 urlpatterns =[
     path('create', views.create),
-    path('<str:space>', views.get_space),
-    path('banner/<str:space>', views.get_banner),
-    path('stage/<str:space>', views.add_stage)
+    path('<str:spaceId>', views.get_space),
+    path('banner/<str:spaceId>', views.get_banner),
+    path('stage/<str:spaceId>', views.add_stage)
 ]
