@@ -2,6 +2,7 @@ import os, datetime, time, pymongo
 from library.db_connection_factory import get_collection
 import library.db_utils as db_utils
 from app.sequence.service import nextval, reset_sequence
+import app.log.service as log_service
 
 domain = 'Task'
 
@@ -12,10 +13,15 @@ def find(request, space, project_id):
 def update(request, space, project_id, data):
     project = db_utils.find(space, 'Project', {'_id': project_id})[0]
     data['projectId'] = project_id
+    snapshot = []
     if '_id' not in data:
         data['taskId'] = project['name'][:4].upper() + '-' + str(nextval(space, 'taskId', project_id))
         data['order'] = nextval(space, 'taskOrder', project_id)
+    else:
+        snapshot = db_utils.find(space, domain, {'_id': data['_id']})
     updated_record = db_utils.upsert(space, domain, data, request.user_id)
+    if '_id' in data and len(snapshot) == 1:
+        log_service.add(space, domain, snapshot[0], updated_record, ['type', 'title', 'description', 'assignedTo', 'parentTaskId', 'priority'], request.user_id)
     return (200, {'data': updated_record})
 
 def delete(request, space, project_id, id):

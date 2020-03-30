@@ -15,7 +15,7 @@ def update(request, space, data):
     updated_record = db_utils.upsert(space, domain, data, request.user_id)
     if new_record:
         sequence_service.create_sequence(space, 'taskOrder', updated_record['_id'], 1)
-        sequence_service.create_sequence(space['name'], 'taskId', project['_id'], 1)
+        sequence_service.create_sequence(space, 'taskId', updated_record['_id'], 1)
     return (200, {'data': updated_record})
 
 def delete(request, space, id):

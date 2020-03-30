@@ -16,6 +16,7 @@ def delete(request, space, id):
     result = db_utils.delete(space, domain, {'_id': id}, request.user_id)
     return (200, {'deleted_count': result.deleted_count})
 
-def find_by_id(request, space, id):
-    data = db_utils.find(space, domain, {'_id': id})
+def find_by_taskid(request, space, id):
+    print(id)
+    data = db_utils.find(space, domain, {'taskId': id})
     return (200, {'data': data})
