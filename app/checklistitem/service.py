@@ -1,19 +1,18 @@
 import os, datetime, time
-from library.db_connection_factory import get_collection
 import library.db_utils as db_utils
 
 domain = 'Checklistitem'
 
-def find(request, spaceId):
-    data = db_utils.find(spaceId, domain, {})
+def find(request, space_id):
+    data = db_utils.find(space_id, domain, {})
     return (200, {'data': data})
 
-def update(request, spaceId, data):
-    updated_record = db_utils.upsert(spaceId, domain, data, request.user_id)
+def update(request, space_id, data):
+    updated_record = db_utils.upsert(space_id, domain, data, request.user_id)
     return (200, {'data': updated_record})
 
-def delete(request, spaceId, id):
-    result = db_utils.delete(spaceId, domain, {'_id': id}, request.user_id)
+def delete(request, space_id, id):
+    result = db_utils.delete(space_id, domain, {'_id': id}, request.user_id)
     return (200, {'deleted_count': result.deleted_count})
 
 def find_by_taskid(request, space, id):

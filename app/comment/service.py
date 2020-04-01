@@ -1,5 +1,4 @@
 import os, datetime, time
-from library.db_connection_factory import get_collection
 import library.db_utils as db_utils
 
 domain = 'Task.Comment'
