@@ -14,7 +14,7 @@ def update(request, space_id, project_id, data):
     data['projectId'] = project_id
     snapshot = []
     if '_id' not in data:
-        data['taskId'] = project['name'][:4].upper() + '-' + str(nextval(space_id, 'taskId', project_id))
+        data['taskId'] = project['name'][:4].lower() + '-' + str(nextval(space_id, 'taskId', project_id))
         data['order'] = nextval(space_id, 'taskOrder', project_id)
     else:
         snapshot = db_utils.find(space_id, domain, {'_id': data['_id']})
