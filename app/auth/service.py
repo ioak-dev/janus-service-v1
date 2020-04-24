@@ -59,20 +59,24 @@ def do_signin_via_jwt(space_id, data):
 def get_session(space_id, auth_key):
     start_time = int(round(time.time() * 1000))
     response = requests.get('http://127.0.0.1:8020/auth/' + space_id + '/session/' + auth_key)
-    oa_time = int(round(time.time() * 1000))
     if response.status_code != 200:
         return (response.status_code, response.json())
     oa_response = jwt_utils.decode(response.json()['token'])
     existing_user_data = user_service.find_by_user_id(space_id, oa_response['userId'])
     if len(existing_user_data) == 1:
-        existing_user_data[0]['token'] = response.json()['token']
-        res_time = int(round(time.time() * 1000))
-        print(start_time, oa_time, res_time)
-        return (200, {'data': existing_user_data[0]})
+        updated_record = user_service.update_user(space_id, {
+            '_id': existing_user_data[0]['_id'],
+            'firstName': oa_response['firstName'],
+            'lastName': oa_response['lastName'],
+            'email': oa_response['email']
+        })
+        updated_record['token'] = response.json()['token']
+        return (200, {'data': updated_record})
     else:
         new_data = user_service.insert_user(space_id, {
             '_id': oa_response['userId'],
-            'name': oa_response['name'],
+            'firstName': oa_response['firstName'],
+            'lastName': oa_response['lastName'],
             'email': oa_response['email']
         })
         new_data['token'] = response.json()['token']
