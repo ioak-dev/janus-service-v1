@@ -32,6 +32,7 @@ urlpatterns = [
     path('stage/<str:space_id>/', include('app.stage.urls')),
     path('task/<str:space_id>/', include('app.task.urls')),
     path('comment/task/<str:space_id>/', include('app.comment.urls')),
+    path('attachment/task/<str:space_id>/', include('app.attachment.urls')),
     path('log/<str:space_id>/', include('app.log.urls')),
     path('checklistitem/task/<str:space_id>/', include('app.checklistitem.urls'))
 ]

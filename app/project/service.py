@@ -14,6 +14,7 @@ def update(request, space_id, data):
     updated_record = db_utils.upsert(space_id, domain, data, request.user_id)
     if new_record:
         sequence_service.create_sequence(space_id, 'taskOrder', updated_record['_id'], 1)
+        sequence_service.create_sequence(space_id, 'stageOrder', updated_record['_id'], 1)
         sequence_service.create_sequence(space_id, 'taskId', updated_record['_id'], 1)
     return (200, {'data': updated_record})
 

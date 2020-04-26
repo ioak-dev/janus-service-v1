@@ -20,3 +20,10 @@ def by_id(request, space_id, project_id, id):
     if request.method == 'DELETE':
         response = service.delete(request, space_id, project_id, id)
         return JsonResponse(response[1], status=response[0])
+
+@api_view(['POST'])
+def move_stage(request, space_id, project_id):
+    print('**************')
+    if request.method == 'POST':
+        response = service.move_stage(request, space_id, project_id, request.body)
+        return JsonResponse(response[1], status=response[0])
