@@ -4,6 +4,9 @@ from app.sequence.service import nextval, reset_sequence
 import app.log.service as log_service
 
 domain = 'Task'
+domain_attachment = 'Task.Attachment'
+domain_comment = 'Task.Comment'
+domain_checklistitem = 'Task.checklistitem'
 
 def find(request, space_id, project_id):
     data = db_utils.find(space_id, domain, {'projectId': project_id}, [('order', pymongo.DESCENDING)])
@@ -23,9 +26,16 @@ def update(request, space_id, project_id, data):
         log_service.add(space_id, domain, snapshot[0], updated_record, ['type', 'title', 'description', 'assignedTo', 'parentTaskId', 'priority'], request.user_id)
     return (200, {'data': updated_record})
 
-def delete(request, space_id, project_id, id):
-    result = db_utils.delete(space_id, domain, {'_id': id}, request.user_id)
-    return (200, {'deleted_count': result.deleted_count})
+def delete(request, space_id, id):
+    result = delete_by_id(space_id, id, request.user_id)
+    return (200, result)
+
+def delete_by_id(space_id, id, user_id):
+    task_result = db_utils.delete(space_id, domain, {'_id': id}, user_id)
+    attachment_result = db_utils.delete(space_id, domain_attachment, {'taskId': id}, user_id)
+    comment_result = db_utils.delete(space_id, domain_comment, {'taskId': id}, user_id)
+    checklist_result = db_utils.delete(space_id, domain_checklistitem, {'taskId': id}, user_id)
+    return {'tasks_deleted': task_result.deleted_count, 'attachments_deleted': attachment_result.deleted_count, 'comments_deleted': comment_result.deleted_count, 'checklists_deleted': checklist_result.deleted_count}
 
 def find_by_id(request, space_id, project_id, id):
     data = db_utils.find(space_id, domain, {'_id': id})

@@ -9,7 +9,7 @@ def do(request, space_id):
         response = service.find(request, space_id)
         return JsonResponse(response[1], status=response[0])
     elif request.method == 'PUT':
-        response = service.dp_update_user(request, space_id)
+        response = service.do_update_user(request, space_id)
         return JsonResponse(response[1], status=response[0])
 
 @api_view(['GET'])

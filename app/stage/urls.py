@@ -6,5 +6,5 @@ from . import views
 urlpatterns =[
     path('', views.get_update_stage),
     path('<str:project_id>/move', views.move_stage),
-    path('<str:project_id>/<str:id>', views.by_id)
+    path('<str:id>', views.by_id)
 ]

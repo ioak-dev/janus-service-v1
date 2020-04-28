@@ -13,12 +13,13 @@ def get_update_stage(request, space_id):
         return JsonResponse(response[1], status=response[0])
 
 @api_view(['GET', 'DELETE'])
-def by_id(request, space_id, project_id, id):
+def by_id(request, space_id, id):
     if request.method == 'GET':
-        response = service.find_by_id(request, space_id, project_id, id)
+        response = service.find_by_id(request, space_id, id)
         return JsonResponse(response[1], status=response[0])
     if request.method == 'DELETE':
-        response = service.delete(request, space_id, project_id, id)
+        response = service.delete(request, space_id, id)
+        print(response[1])
         return JsonResponse(response[1], status=response[0])
 
 @api_view(['POST'])

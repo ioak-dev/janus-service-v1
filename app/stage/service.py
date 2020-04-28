@@ -1,8 +1,10 @@
 import os, datetime, time, pymongo
 import library.db_utils as db_utils
 from app.sequence.service import nextval, reset_sequence
+import app.task.service as task_service
 
 domain = 'Stage'
+domain_task = 'Task'
 
 def find(request, space_id):
     data = db_utils.find(space_id, domain, {}, [('order', pymongo.DESCENDING)])
@@ -14,11 +16,22 @@ def update(request, space_id, data):
     updated_record = db_utils.upsert(space_id, domain, data, request.user_id)
     return (200, {'data': updated_record})
 
-def delete(request, space_id, project_id, id):
-    result = db_utils.delete(space_id, domain, {'_id': id}, request.user_id)
-    return (200, {'deleted_count': result.deleted_count})
+def delete(request, space_id, id):
+    tasks = db_utils.find(space_id, domain_task, {'stageId': id})
+    task_deleted_count = 0
+    task_attachment_deleted_count = 0
+    task_checklist_deleted_count = 0
+    task_comment_deleted_count = 0
+    for task in tasks:
+        result = task_service.delete_by_id(space_id, task['_id'], request.user_id)
+        task_attachment_deleted_count += result['attachments_deleted']
+        task_checklist_deleted_count += result['checklists_deleted']
+        task_comment_deleted_count += result['comments_deleted']
+        task_deleted_count += result['tasks_deleted']
+    stage_result = db_utils.delete(space_id, domain, {'_id': id}, request.user_id)
+    return (200, {'task_deleted_count': task_deleted_count, 'task_attachment_deleted_count': task_attachment_deleted_count, 'task_checklist_deleted_count': task_checklist_deleted_count, 'task_comment_deleted_count': task_comment_deleted_count, 'stages_deleted': stage_result.deleted_count})
 
-def find_by_id(request, space_id, project_id, id):
+def find_by_id(request, space_id, id):
     data = db_utils.find(space_id, domain, {'_id': id})
     return (200, {'data': data})
 

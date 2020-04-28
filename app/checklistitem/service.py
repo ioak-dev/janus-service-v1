@@ -1,7 +1,7 @@
 import os, datetime, time
 import library.db_utils as db_utils
 
-domain = 'Checklistitem'
+domain = 'Task.checklistitem'
 
 def find(request, space_id):
     data = db_utils.find(space_id, domain, {})
