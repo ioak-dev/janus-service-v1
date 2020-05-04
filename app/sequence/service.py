@@ -22,7 +22,6 @@ def reset_sequence(space_id, field, context):
     return db_utils.upsert(space_id, domain, sequence)
 
 def nextval(space_id, field, context):
-    print(space_id, field, context)
     data = db_utils.find(space_id, domain, {'field': field, 'context': context})[0]
     currVal = data['nextVal']
     data['nextVal'] = data['nextVal'] + data['factor']

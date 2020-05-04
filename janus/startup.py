@@ -12,3 +12,5 @@ def run():
                 sequence_service.create_sequence(space['name'], 'taskId', project['_id'], 1)
             if sequence_service.is_present(space['name'], 'stageOrder', project['_id']) == False:
                 sequence_service.create_sequence(space['name'], 'stageOrder', project['_id'], 1)
+            if sequence_service.is_present(space['name'], 'epicColor', project['_id']) == False:
+                sequence_service.create_sequence(space['name'], 'epicColor', project['_id'], 1)

@@ -12,14 +12,11 @@ def get_update_team(request, space_id):
         response = service.update(request, space_id, request.body)
         return JsonResponse(response[1], status=response[0])
     
-@api_view(['DELETE'])
-def delete_team(request,space_id,id):
+@api_view(['GET', 'DELETE'])
+def get_delete_by_id(request,space_id,id):
     if request.method == 'DELETE':
         response = service.delete(request, space_id, id)
         return JsonResponse(response[1], status=response[0])
-
-@api_view(['GET'])
-def get_by_id(request, space_id, id):
     if request.method == 'GET':
         response = service.find_by_id(request, space_id, id)
         return JsonResponse(response[1], status=response[0])
