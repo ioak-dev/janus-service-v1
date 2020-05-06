@@ -66,7 +66,7 @@ def clean_array(data):
     return data
 
 def declean_object(data):
-    if data is not None and data.get('_id') is not None and type(data.get('_id')) != ObjectId:
+    if data is not None and data.get('_id') is not None and type(data.get('_id')) != ObjectId and type(data.get('_id')) == str:
         data['_id'] = ObjectId(data.get('_id'))
     return data
 

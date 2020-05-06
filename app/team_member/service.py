@@ -3,7 +3,7 @@ import library.db_utils as db_utils
 
 domain = 'team.member'
 
-def find(request, space_id):
+def do_find(request, space_id):
     data = db_utils.find(space_id, domain, {})
     return (200, {'data': data})
 
@@ -20,8 +20,8 @@ def delete(request, space_id, team_id, user_id):
     return (200, {'deleted_count': result.deleted_count})
 
 def delete_by_id(request, space_id, id):
-    print(space_id)
-    print(domain)
-    print(id)
     result = db_utils.delete(space_id, domain, {'_id': id}, request.user_id)
     return (200, {'deleted_count': result.deleted_count})
+
+def find(space_id, user_id):
+    return db_utils.find(space_id, domain, {'userId': user_id})

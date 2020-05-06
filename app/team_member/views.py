@@ -22,5 +22,5 @@ def delete_by_id(request, space_id, id):
 @api_view(['GET'])
 def get(request, space_id):
     if request.method == 'GET':
-        response = service.find(request, space_id)
+        response = service.do_find(request, space_id)
         return JsonResponse(response[1], status=response[0])
