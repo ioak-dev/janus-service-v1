@@ -1,58 +1,18 @@
-import os, datetime, time
+import os, datetime, time, requests
 from pymongo import MongoClient
-import secrets, jwt
-from library.db_connection_factory import get_collection
+import secrets, jwt, time
 import library.db_utils as db_utils
+import library.jwt_utils as jwt_utils
+import app.user.service as user_service
 
 DATABASE_URI = os.environ.get('DATABASE_URI')
 
+self_space_id = 'janus'
 domain="user"
 
-def generate_keys():
-    return (200, {
-        'salt': secrets.token_hex(40),
-        'solution': secrets.token_hex(40)
-    })
-
-def get_keys(spaceId, email):
-    user = get_collection(spaceId, 'user').find_one({'email': email})
-    #user = db_utils.find(space,domain,{'email': email})
-    if user is None:
-        return (404, {})
-    else:
-        return (200, {'problem': user.get('problem')})
-
-def do_signup(spaceId, data):
-    print(data)
-    #user = get_collection(space, 'user').insert_one(data)
-    user = db_utils.upsert(spaceId, domain, data)
-    #return (200, {'_id': str(user.inserted_id)})
-    return (200, {'_id': user})
-
-def do_signin(spaceId, data):
-    user = get_collection(spaceId, 'user').find_one({'email': data.get('email')})
-    #user = db_utils.find(space, domain, {'email': data.get('email')})
-    #response = {'content': {}}
-    if user is None:
-        return (404, {})
-    elif user.get('solution') != data.get('solution'):
-        return (401, {})
-    elif user.get('solution') == data.get('solution'):
-        return (200, {
-            'name': user.get('name'),
-            'email': user.get('email'),
-            'token': jwt.encode({
-                'userId': str(user.get('_id')),
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=8)
-                }, 'jwtsecret').decode('utf-8'),
-            'spaceId': spaceId,
-            'secret': 'none'
-        })
-
-def do_jwttest(spaceId):
-    spaceId=get_collection('janus', 'spaceId').find_one({'name': spaceId})
-    #space = db_utils.find(space, domain,{'name': space})
-    jwtPassword = spaceId.get('jwtPassword')
+def do_jwttest(space_id):
+    space = db_utils.find(self_space_id, domain, {'name': space_id})[0]
+    jwtPassword = space.get('jwtPassword')
     return (200, jwt.encode({
             'userId': '4587439657496t',
             'name': 'test user display name',
@@ -60,33 +20,22 @@ def do_jwttest(spaceId):
             'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=8)
         }, jwtPassword, algorithm='HS256').decode('utf-8'))
 
-def do_signin_via_jwt(spaceId, data):
-    spaceData=get_collection('janus', 'spaceId').find_one({'name': spaceId})
+def do_signin_via_jwt(space_id, data):
+    spaceData=db_utils.find(self_space_id, domain, {'name': space_id})
     #spaceData = db_utils.find(space, domain, {'name': space})
     jwtPassword = spaceData.get('jwtPassword')
     jwtToken = data.get('jwtToken')
     tokenData = jwt.decode(jwtToken, jwtPassword, algorithm='HS256')
-    user = get_collection(spaceId, 'user').find_one({'email': tokenData.get('email')})
+    user = db_utils.find(space_id, domain, {'email': tokenData.get('email')})
     #user = db_utils.find(space, domain,{'email': tokenData.get('email')})
     if user is None:
-        """ get_collection(spaceId, 'user').insert_one({
-            'name': tokenData.get('name'),
-            'email': tokenData.get('email'),
-            'type': 'JWT_USER'
-        }) """
-        db_utils.upsert(spaceId, domain, {
+        db_utils.upsert(space_id, domain, {
             'name': tokenData.get('name'),
             'email': tokenData.get('email'),
             'type': 'JWT_USER'
         })
     else:
-        """ get_collection(spaceId, 'user').update({'_id': user.get('_id')},
-        {
-            'name': tokenData.get('name'),
-            'email': tokenData.get('email'),
-            'type': 'JWT_USER'
-        }, upsert=True) """
-        db_utils.upsert(spaceId, domain, {
+        db_utils.upsert(space_id, domain, {
             {'_id': user.get('_id')},
             {
                 'name': tokenData.get('name'),
@@ -95,8 +44,7 @@ def do_signin_via_jwt(spaceId, data):
             }
         })
     
-    user = get_collection(spaceId, 'user').find_one({'email': tokenData.get('email')})
-    #user = db_utils.find(space, user, {'email': tokenData.get('email')})
+    user = db_utils.find(space_id, domain, {'email': tokenData.get('email')})
     return (200, {
         'name': user.get('name'),
         'email': user.get('email'),
@@ -104,12 +52,32 @@ def do_signin_via_jwt(spaceId, data):
                 'name': str(user.get('_id')),
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=8)
             }, jwtPassword, algorithm='HS256').decode('utf-8'),
-        'spaceId': spaceId,
+        'space_id': space_id,
         'secret': 'none'
     })
 
-    # print(jwt.decode(en, 'secret', algorithms=['HS256']))
-    # time.sleep(10)
-    # print(jwt.decode(en, 'secret', algorithms=['HS256'], verify=False))
-    # print(jwt.decode(en, 'secret', algorithms=['HS256']))
-    # return jwt.encode({'some': 'payload', 'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=30)}, 'secret', algorithm='HS256')
+def get_session(space_id, auth_key):
+    start_time = int(round(time.time() * 1000))
+    response = requests.get('http://127.0.0.1:8020/auth/' + space_id + '/session/' + auth_key)
+    if response.status_code != 200:
+        return (response.status_code, response.json())
+    oa_response = jwt_utils.decode(response.json()['token'])
+    existing_user_data = user_service.find_by_user_id(space_id, oa_response['userId'])
+    if len(existing_user_data) == 1:
+        updated_record = user_service.update_user(space_id, {
+            '_id': existing_user_data[0]['_id'],
+            'firstName': oa_response['firstName'],
+            'lastName': oa_response['lastName'],
+            'email': oa_response['email']
+        })
+        updated_record['token'] = response.json()['token']
+        return (200, {'data': updated_record})
+    else:
+        new_data = user_service.insert_user(space_id, {
+            '_id': oa_response['userId'],
+            'firstName': oa_response['firstName'],
+            'lastName': oa_response['lastName'],
+            'email': oa_response['email']
+        })
+        new_data['token'] = response.json()['token']
+        return (200, {'data': new_data})

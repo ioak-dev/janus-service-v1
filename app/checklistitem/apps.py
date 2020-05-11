@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class ProjectConfig(AppConfig):
-    name = 'checklistitem'
+    name = 'Task.checklistitem'

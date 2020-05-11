@@ -4,20 +4,20 @@ from django.core import serializers
 import app.checklistitem.service as service
 
 @api_view(['PUT'])
-def update_checklistitem(request, space):
+def update_checklistitem(request, space_id):
     if request.method == 'PUT':
-        response = service.update(request, spaceId, request.body)
+        response = service.update(request, space_id, request.body)
         return JsonResponse(response[1], status=response[0])
     
 @api_view(['DELETE'])
-def delete_checklistitem(request,spaceId,id):
+def delete_checklistitem(request,space_id,id):
     if request.method == 'DELETE':
-        response = service.delete(request, spaceId, id)
+        response = service.delete(request, space_id, id)
         return JsonResponse(response[1], status=response[0])
 
 @api_view(['GET'])
-def get_by_taskid(request, space, task_id):
+def get_by_taskid(request, space_id, task_id):
     if request.method == 'GET':
-        response = service.find_by_taskid(request, space, task_id)
+        response = service.find_by_taskid(request, space_id, task_id)
         return JsonResponse(response[1], status=response[0])
 

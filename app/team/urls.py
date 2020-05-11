@@ -5,6 +5,5 @@ from . import views
 
 urlpatterns =[
     path('', views.get_update_team),
-    path('<str:id>', views.delete_team),
-    path('id/<str:id>', views.get_by_id)
+    path('<str:id>', views.get_delete_by_id)
 ]
