@@ -32,6 +32,7 @@ def update(request, space_id, data):
         sequence_service.create_sequence(space_id, 'taskOrder', updated_record['_id'], 1)
         sequence_service.create_sequence(space_id, 'stageOrder', updated_record['_id'], 1)
         sequence_service.create_sequence(space_id, 'taskId', updated_record['_id'], 1)
+        role_service.add(space_id, {'type': 'ProjectAdministrator', 'userId': request.user_id, 'domainId': updated_record['_id']}, request.user_id)
     return (200, {'data': updated_record})
 
 def delete(request, space_id, id):
