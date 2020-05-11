@@ -6,6 +6,9 @@ import library.jwt_utils as jwt_utils
 import app.user.service as user_service
 
 DATABASE_URI = os.environ.get('DATABASE_URI')
+ONEAUTH_API = os.environ.get('ONEAUTH_API')
+if ONEAUTH_API is None:
+    ONEAUTH_API = 'http://127.0.0.1:8020/auth/'
 
 self_space_id = 'janus'
 domain="user"
@@ -58,7 +61,7 @@ def do_signin_via_jwt(space_id, data):
 
 def get_session(space_id, auth_key):
     start_time = int(round(time.time() * 1000))
-    response = requests.get('http://127.0.0.1:8020/auth/' + space_id + '/session/' + auth_key)
+    response = requests.get(ONEAUTH_API + space_id + '/session/' + auth_key)
     if response.status_code != 200:
         return (response.status_code, response.json())
     oa_response = jwt_utils.decode(response.json()['token'])
