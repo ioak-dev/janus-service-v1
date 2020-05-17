@@ -32,6 +32,7 @@ def update(request, space_id, data):
         sequence_service.create_sequence(space_id, 'taskOrder', updated_record['_id'], 1)
         sequence_service.create_sequence(space_id, 'stageOrder', updated_record['_id'], 1)
         sequence_service.create_sequence(space_id, 'taskId', updated_record['_id'], 1)
+        sequence_service.create_sequence(space_id, 'epicColor', updated_record['_id'], 1)
     return (200, {'data': updated_record})
 
 def delete(request, space_id, id):

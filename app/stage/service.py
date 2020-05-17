@@ -7,8 +7,15 @@ domain = 'Stage'
 domain_task = 'Task'
 
 def find(request, space_id):
-    data = db_utils.find(space_id, domain, {}, [('order', pymongo.DESCENDING)])
+    data = db_utils.find(space_id, domain, {}, [('order', pymongo.ASCENDING)])
     return (200, {'data': data})
+
+def get_last_stage(space_id, project_id):
+    data = db_utils.find(space_id, domain, {'projectId': project_id}, [('order', pymongo.DESCENDING)])
+    if len(data) > 0:
+        return data[0]
+    else:
+        return ''
 
 def update(request, space_id, data):
     if '_id' not in data:
