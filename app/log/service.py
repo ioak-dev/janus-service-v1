@@ -7,6 +7,8 @@ domain = 'log'
 def add(space_id, domain_name, snapshot, new_record, audit_fields, user_id):
     list_of_updated_records = []
     for field in new_record.keys():
+        if field not in snapshot:
+            snapshot[field] = ''
         if field in audit_fields and snapshot[field] != new_record[field]:
             updated_record = db_utils.upsert(space_id, domain, {
                 'domain': domain_name,
