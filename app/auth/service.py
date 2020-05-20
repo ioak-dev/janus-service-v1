@@ -4,6 +4,7 @@ import secrets, jwt, time
 import library.db_utils as db_utils
 import library.jwt_utils as jwt_utils
 import app.user.service as user_service
+import app.sequence.service as sequence_service
 
 DATABASE_URI = os.environ.get('DATABASE_URI')
 ONEAUTH_API = os.environ.get('ONEAUTH_API')
@@ -76,11 +77,14 @@ def get_session(space_id, auth_key):
         updated_record['token'] = response.json()['token']
         return (200, {'data': updated_record})
     else:
+        if user_service.is_first_user(space_id):
+            sequence_service.create_sequence(space_id, 'userColor', '', 1)
         new_data = user_service.insert_user(space_id, {
             '_id': oa_response['userId'],
             'firstName': oa_response['firstName'],
             'lastName': oa_response['lastName'],
-            'email': oa_response['email']
+            'email': oa_response['email'],
+            'color': 'color_' + str((sequence_service.nextval(space_id, 'userColor', '') % 10) + 1)
         })
         new_data['token'] = response.json()['token']
         return (200, {'data': new_data})
