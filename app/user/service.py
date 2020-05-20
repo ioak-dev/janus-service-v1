@@ -39,3 +39,10 @@ def update_user(space_id, data, user_id=None):
 def insert_user(space_id, data, user_id=None):
     data['_id'] = ObjectId(data['_id'])
     return db_utils.insert(space_id, domain, data, user_id)
+
+def is_first_user(space_id):
+    data = db_utils.find(space_id, domain, {})
+    if len(data) == 0:
+        return True
+    else:
+        return False
